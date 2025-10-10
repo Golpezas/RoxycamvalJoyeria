@@ -1,0 +1,16 @@
+# Dependencias
+/node_modules
+/backend/node_modules
+/frontend/node_modules
+/package-lock.json
+
+# Cache de Next.js
+/frontend/.next
+/.next
+
+# Variables de Entorno y Claves Secretas
+.env
+*.json.key
+
+# Logs y Crash Dumps
+npm-debug.log*
