@@ -1,0 +1,33 @@
+Productos:
+
+IDProducto	Nombre	Descripcion	Precio	Stock	Imagenes	IDCategoria	IDSubCategoria
+R001	Cartera Roja A	Hecha a mano	50000	1	/Imagenes/cartera-roja-a.jpg	1	11
+R002	Cartera Roja B	Hecha a mano	50000	1	/Imagenes/cartera-roja-b.png	1	11
+A001	Cartera Azul A	Hecha a mano	50000	1	/Imagenes/cartera-azul-a.png	1	11
+V001	Cartera Verde A	Hecha a mano	50000	1	/Imagenes/cartera-verde-a.png	1	11
+V002	Cartera Verde B	Hecha a mano	50000	1	/Imagenes/cartera-verde-b.png	1	11
+V003	Cartera Verde C	Hecha a mano	50000	1	/Imagenes/cartera-verde-c.png	1	11
+M001	Cartera Marron A	Hecha a mano	50000	1	/Imagenes/cartera-marron-a.png	1	11
+
+Categorías:
+
+IDCategoria	Nombre
+1	Cartera
+
+Sub_Categoria:
+
+IDCategoria	IDSubCategoria	NombreSubCategoria
+1	11	Cuero
+1	12	Cuerina
+
+Usuarios:
+
+IDUsuarios	Nombre	Email	Contraseña
+
+Pedidos:
+
+IDPedido	IDUsuario	Fecha	Total	Estado
+
+DetallesPedidos:
+
+IDDetallesPedidos	IDPedido	IDProducto	Cantidad	PrecioUnitario
