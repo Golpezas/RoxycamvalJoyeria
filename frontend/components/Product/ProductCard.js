@@ -57,9 +57,9 @@ const ProductCard = ({ product }) => {
             src={imgSrc}
             alt={product.Nombre_Producto}
             fill
-            className="object-contain p-6 transition-transform duration-500 group-hover:scale-110"
+            priority          // ← solo en la home si querés
+            className="object-contain p-6 ..."
             unoptimized
-            onError={() => setImgSrc('/images/placeholder.webp')}
           />
           {isOffer && (
             <span className="absolute top-4 left-4 bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-full z-10 shadow-2xl">

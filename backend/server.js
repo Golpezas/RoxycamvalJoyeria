@@ -1,3 +1,4 @@
+// backend/server.js → VERSIÓN FINAL CON CATEGORÍAS DINÁMICAS
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -9,21 +10,37 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Importar y usar la lógica del catálogo
-const { getCatalogData } = require('./services/sheetService'); 
+// Importar catálogo
+const { getCatalogData } = require('./services/sheetService');
 
-// Rutas de la API (Solo la ruta de productos por ahora)
+// === RUTA PRINCIPAL: PRODUCTOS (con filtro opcional por categoría) ===
 app.get('/api/v1/productos', async (req, res) => {
-    try {
-        const products = await getCatalogData(req.query);
-        res.status(200).json(products);
-    } catch (error) {
-        console.error("Error fetching catalog data:", error);
-        res.status(500).json({ message: "Error interno del servidor al cargar el catálogo." });
-    }
+  try {
+    const products = await getCatalogData(req.query);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching catalog data:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
 });
 
-// Iniciar servidor
+// === NUEVA RUTA: LISTA DE CATEGORÍAS ÚNICAS ===
+app.get('/api/v1/categorias', async (req, res) => {
+  try {
+    const data = await getCatalogData();
+    const categorias = [...new Set(
+      data.products
+        .map(p => p.Categoría)
+        .filter(cat => cat && cat.trim() !== '')
+        .map(cat => cat.trim())
+    )];
+    res.json({ categorias });
+  } catch (error) {
+    res.json({ categorias: [] });
+  }
+});
+
 app.listen(PORT, () => {
-    console.log(`Servidor de la API corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor de la API corriendo en http://localhost:${PORT}`);
+  console.log(`Roxycamval → Catálogo y categorías dinámicas activados`);
 });
