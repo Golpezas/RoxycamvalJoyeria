@@ -4,28 +4,27 @@
 @tailwind utilities;
 /* stylelint-enable at-rule-no-unknown */
 
+/* ========================
+   COLORES GLOBALES FORZADOS
+   ======================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #ffffff;
 }
 
-/*edia (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}*/
-
+/* Desactivamos el dark mode automático porque queremos control total */
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  background: #000000 !important;
+  color: #ffffff !important;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: transparent; /* El fondo lo controla _app.js */
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -36,13 +35,54 @@ body {
   margin: 0;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* ========================
+   FUERZA TEXTO BLANCO EN TODOS LOS COMPONENTES
+   ======================== */
+.text-white,
+.text-white * {
+  color: white !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+h1, h2, h3, h4, h5, h6,
+p, span, div, a, li, label, button {
+  color: white !important;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Botones y tarjetas también legibles */
+button, .bg-white, .bg-gray-100 {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ========================
+   IMÁGENES EN TARJETAS (para que fill funcione)
+   ======================== */
+.card-image-container {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* Hace cuadrado perfecto */
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1rem 1rem 0 0;
+  overflow: hidden;
+}
+
+/* ========================
+   ESTILOS ADICIONALES BONUS (queda PRO)
+   ======================== */
+::selection {
+  background: #ff69b4;
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #000;
+}
+::-webkit-scrollbar-thumb {
+  background: #ff69b4;
+  border-radius: 4px;
 }

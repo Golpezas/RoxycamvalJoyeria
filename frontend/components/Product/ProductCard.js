@@ -52,17 +52,17 @@ const ProductCard = ({ product }) => {
     <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
       <Link href={`/producto/${product.ID_SKU}`} className="block">
 
-        <div className="relative w-full h-64 bg-gray-50 overflow-hidden">
+        <div className="card-image-container">
           <Image
             src={imgSrc}
             alt={product.Nombre_Producto}
             fill
-            style={{ objectFit: 'contain' }}
-            className="transition-transform duration-500 group-hover:scale-105"
-            unoptimized={true}
+            className="object-contain p-6 transition-transform duration-500 group-hover:scale-110"
+            unoptimized
+            onError={() => setImgSrc('/images/placeholder.webp')}
           />
           {isOffer && (
-            <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
+            <span className="absolute top-4 left-4 bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-full z-10 shadow-2xl">
               OFERTA
             </span>
           )}
