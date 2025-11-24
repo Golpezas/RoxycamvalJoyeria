@@ -1,121 +1,93 @@
-// Archivo: EMJoyas/backend/services/sheetService.js
+// backend/services/sheetService.js
+const { google } = require('googleapis');
+require('dotenv').config();
 
-const catalogData = [
-    {
-        "ID_SKU": "AR925-CUB-CIR-07",
-        "Nombre_Producto": "Anillo Solitario Clásico",
-        "Categoría": "Anillos",
-        "Subcategoría": "Compromiso",
-        "Material": "Plata Esterlina 925",
-        "Piedra_Principal": "Circonia Cúbica",
-        "Talla/Medida": "Talla 7",
-        "Peso_Gramos": 3.25,
-        "Precio_MXN": 1899,
-        "Existencias": 25,
-        "URL_Imagen_Principal": "/images/anillo-clasico.webp",
-        "URL_Imagen_Secundaria_1": "url/p1-sec.webp",
-        "Descripción_Corta": "Anillo elegante.",
-        "Descripción_Larga": "Anillo Solitario Clásico con circonia cúbica en plata 925. Ideal para compromiso o regalo especial.",
-        "Etiquetas_Busqueda": "solitario, boda, plata",
-        "Producto_Activo": true,
-        "Es_Novedad": true,
-        "Es_Oferta": false
-    },
-    {
-        "ID_SKU": "COL14K-DIA-001",
-        "Nombre_Producto": "Collar Solitario de Oro",
-        "Categoría": "Collares",
-        "Subcategoría": "Cadenas",
-        "Material": "Oro Amarillo 14k",
-        "Piedra_Principal": "Diamante Natural",
-        "Talla/Medida": "45 cm",
-        "Peso_Gramos": 5.8,
-        "Precio_MXN": 15999,
-        "Existencias": 5,
-        "URL_Imagen_Principal": "/images/collar-oro.webp",
-        "URL_Imagen_Secundaria_1": "url/p2-sec.webp",
-        "Descripción_Corta": "Lujo y exclusividad.",
-        "Descripción_Larga": "Collar con diamante natural en cadena de oro 14K. Lujo y exclusividad, garantía 1 año.",
-        "Etiquetas_Busqueda": "lujo, diamante, regalo, oro",
-        "Producto_Activo": true,
-        "Es_Novedad": false,
-        "Es_Oferta": true
-    },
-    {
-        "ID_SKU": "PUL925-CAD-002",
-        "Nombre_Producto": "Pulsera Cadena Eslabones",
-        "Categoría": "Pulseras",
-        "Subcategoría": "Cadenas",
-        "Material": "Plata Esterlina 925",
-        "Piedra_Principal": "Ninguna",
-        "Talla/Medida": "18 cm",
-        "Peso_Gramos": 12.1,
-        "Precio_MXN": 2499,
-        "Existencias": 40,
-        "URL_Imagen_Principal": "/images/pulsera-eslabones.webp",
-        "URL_Imagen_Secundaria_1": "url/p3-sec.webp",
-        "Descripción_Corta": "Cadena gruesa de estilo moderno.",
-        "Descripción_Larga": "Pulsera de eslabones gruesos en Plata 925. Diseño robusto y moderno, perfecto para el uso diario.",
-        "Etiquetas_Busqueda": "cadena, eslabones, plata, moda",
-        "Producto_Activo": true,
-        "Es_Novedad": true,
-        "Es_Oferta": false
+const sheets = google.sheets('v4');
+
+const auth = new google.auth.GoogleAuth({
+  credentials: {
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  },
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+});
+
+let catalogData = [];
+
+const loadCatalog = async () => {
+  try {
+    const client = await auth.getClient();
+    const response = await sheets.spreadsheets.values.get({
+      auth: client,
+      spreadsheetId: process.env.GOOGLE_SHEET_ID,
+      range: 'Productos!A:ZZ', // lee todas las columnas
+    });
+
+    const rows = response.data.values;
+    if (!rows || rows.length === 0) {
+      console.log('Hoja vacía o sin acceso');
+      return;
     }
-];
+
+    const headers = rows[0];
+    catalogData = rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        obj[h.trim()] = row[i] || '';
+      });
+      // Conversiones necesarias
+      obj.Precio_MXN = parseFloat(obj.Precio_MXN) || 0;
+      obj.Precio_Regular = parseFloat(obj.Precio_Regular) || obj.Precio_MXN;
+      obj.Existencias = parseInt(obj.Existencias) || 0;
+      obj.Es_Oferta = ['sí', 'si', '1', 'true'].includes(obj.Es_Oferta?.toLowerCase());
+      obj.Es_Novedad = ['sí', 'si', '1', 'true'].includes(obj.Es_Novedad?.toLowerCase());
+      return obj;
+    });
+
+    console.log(`Roxycamval → Catálogo cargado: ${catalogData.length} productos cargados desde Google Sheets`);
+  } catch (error) {
+    console.error('Error conectando con Google Sheets:', error.message);
+  }
+};
+
+// Carga inicial
+loadCatalog();
+
+// Recarga cada 5 minutos (el cliente puede editar la hoja y se actualiza sola)
+setInterval(loadCatalog, 5 * 60 * 1000);
 
 const filterProducts = (query) => {
-    let results = catalogData;
+  let results = [...catalogData];
 
-    // 1. Filtrar por búsqueda global (parámetro 'search' o 'q')
-    const searchQuery = query.search || query.q;
-    if (searchQuery) {
-        const lowerCaseQuery = searchQuery.toLowerCase();
-        results = results.filter(p => 
-            p.Nombre_Producto.toLowerCase().includes(lowerCaseQuery) ||
-            p.Descripción_Corta.toLowerCase().includes(lowerCaseQuery) ||
-            p.Etiquetas_Busqueda.toLowerCase().includes(lowerCaseQuery)
-        );
-    }
+  if (query.q || query.search) {
+    const term = (query.q || query.search).toLowerCase();
+    results = results.filter(p =>
+      p.Nombre_Producto?.toLowerCase().includes(term) ||
+      p.Descripción_Corta?.toLowerCase().includes(term) ||
+      p.Etiquetas_Busqueda?.toLowerCase().includes(term)
+    );
+  }
 
-    // 2. Filtrar por categoría (parámetro 'cat')
-    const category = query.cat;
-    if (category) {
-        const lowerCaseCategory = category.toLowerCase();
-        results = results.filter(p => p.Categoría.toLowerCase() === lowerCaseCategory);
-    }
+  if (query.cat) {
+    results = results.filter(p => p.Categoría?.toLowerCase() === query.cat.toLowerCase());
+  }
 
-    return results;
-};
+  if (query.novelty === 'true') {
+    results = results.filter(p => p.Es_Novedad);
+  }
 
-
-// Función principal para obtener datos (simulando una API asíncrona)
-const getCatalogData = (query = {}) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const products = filterProducts(query);
-            resolve({
-                count: products.length,
-                products: products
-            });
-        }, 100); // Pequeño retraso para simular red
-    });
-};
-
-// Función para obtener un solo producto por SKU
-const getProductBySku = (sku) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const product = catalogData.find(p => p.ID_SKU === sku);
-            if (product) {
-                resolve(product);
-            } else {
-                reject({ status: 404, message: "Producto no encontrado" });
-            }
-        }, 100);
-    });
+  return results;
 };
 
 module.exports = {
-    getCatalogData,
-    getProductBySku
+  getCatalogData: async (query = {}) => ({
+    count: filterProducts(query).length,
+    products: filterProducts(query)
+  }),
+  getProductBySku: async (sku) => {
+    const product = catalogData.find(p => p.ID_SKU === sku);
+    if (!product) throw { status: 404, message: 'Producto no encontrado' };
+    return product;
+  },
+  loadCatalog
 };

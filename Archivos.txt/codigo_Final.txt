@@ -1,4 +1,6 @@
-vamos a continuar con el proyecto EMJOYAS, te voy a pasar todo lo q se tiene hasta ahora, en backend: EMJoyas\backend\services\.env: 
+vamos a continuar con el proyecto EMJOYAS, te voy a pasar todo lo q se tiene hasta ahora, en 
+Backend: 
+EMJoyas\backend\services\.env: 
 
 # ID de tu Hoja de Cálculo (Lo obtienes de la URL de tu hoja)
 GOOGLE_SHEET_ID="[1ZOb_aE6f-8TQ_UMq_bhn4sDOIDAVuXwyVHnf5Mn6Zj0]" 
@@ -6,74 +8,11 @@ GOOGLE_SHEET_ID="[1ZOb_aE6f-8TQ_UMq_bhn4sDOIDAVuXwyVHnf5Mn6Zj0]"
 # Credenciales de Servicio (JSON key file content)
 # Importante: Usa las comillas dobles "" y pega todo el contenido JSON aquí.
 GOOGLE_SERVICE_ACCOUNT_EMAIL="[TU_EMAIL_DE_SERVICIO_GENERADO_POR_GOOGLE]"
-GOOGLE_PRIVATE_KEY="[TU_PRIVATE_KEY_GENERADA_POR_GOOGLE]"
+GOOGLE_PRIVATE_KEY="[TU_PRIVATE_KEY_GENERADA_POR_GOOGLE]",
 
-, EMJoyas\backend\services\sheetService.js: 
+EMJoyas\backend\services\sheetService.js: 
 
 // Archivo: EMJoyas/backend/services/sheetService.js
-
-const catalogData = [
-    {
-        "ID_SKU": "AR925-CUB-CIR-07",
-        "Nombre_Producto": "Anillo Solitario Clásico",
-        "Categoría": "Anillos",
-        "Subcategoría": "Compromiso",
-        "Material": "Plata Esterlina 925",
-        "Piedra_Principal": "Circonia Cúbica",
-        "Talla/Medida": "Talla 7",
-        "Peso_Gramos": 3.25,
-        "Precio_MXN": 1899,
-        "Existencias": 25,
-        "URL_Imagen_Principal": "/images/anillo-clasico.webp",
-        "URL_Imagen_Secundaria_1": "url/p1-sec.webp",
-        "Descripción_Corta": "Anillo elegante.",
-        "Descripción_Larga": "Anillo Solitario Clásico con circonia cúbica en plata 925. Ideal para compromiso o regalo especial.",
-        "Etiquetas_Busqueda": "solitario, boda, plata",
-        "Producto_Activo": true,
-        "Es_Novedad": true,
-        "Es_Oferta": false
-    },
-    {
-        "ID_SKU": "COL14K-DIA-001",
-        "Nombre_Producto": "Collar Solitario de Oro",
-        "Categoría": "Collares",
-        "Subcategoría": "Cadenas",
-        "Material": "Oro Amarillo 14k",
-        "Piedra_Principal": "Diamante Natural",
-        "Talla/Medida": "45 cm",
-        "Peso_Gramos": 5.8,
-        "Precio_MXN": 15999,
-        "Existencias": 5,
-        "URL_Imagen_Principal": "/images/collar-oro.webp",
-        "URL_Imagen_Secundaria_1": "url/p2-sec.webp",
-        "Descripción_Corta": "Lujo y exclusividad.",
-        "Descripción_Larga": "Collar con diamante natural en cadena de oro 14K. Lujo y exclusividad, garantía 1 año.",
-        "Etiquetas_Busqueda": "lujo, diamante, regalo, oro",
-        "Producto_Activo": true,
-        "Es_Novedad": false,
-        "Es_Oferta": true
-    },
-    {
-        "ID_SKU": "PUL925-CAD-002",
-        "Nombre_Producto": "Pulsera Cadena Eslabones",
-        "Categoría": "Pulseras",
-        "Subcategoría": "Cadenas",
-        "Material": "Plata Esterlina 925",
-        "Piedra_Principal": "Ninguna",
-        "Talla/Medida": "18 cm",
-        "Peso_Gramos": 12.1,
-        "Precio_MXN": 2499,
-        "Existencias": 40,
-        "URL_Imagen_Principal": "/images/pulsera-eslabones.webp",
-        "URL_Imagen_Secundaria_1": "url/p3-sec.webp",
-        "Descripción_Corta": "Cadena gruesa de estilo moderno.",
-        "Descripción_Larga": "Pulsera de eslabones gruesos en Plata 925. Diseño robusto y moderno, perfecto para el uso diario.",
-        "Etiquetas_Busqueda": "cadena, eslabones, plata, moda",
-        "Producto_Activo": true,
-        "Es_Novedad": true,
-        "Es_Oferta": false
-    }
-];
 
 const filterProducts = (query) => {
     let results = catalogData;
@@ -130,9 +69,9 @@ const getProductBySku = (sku) => {
 module.exports = {
     getCatalogData,
     getProductBySku
-};
+};,
 
-, EMJoyas\backend\server.js: 
+EMJoyas\backend\server.js: 
 
 const express = require('express');
 const cors = require('cors');
@@ -162,11 +101,12 @@ app.get('/api/v1/productos', async (req, res) => {
 // Iniciar servidor
 app.listen(PORT, () => {
     console.log(`Servidor de la API corriendo en http://localhost:${PORT}`);
-});
+});,
 
-, y te adjunto imagenes de la estructuta. Ahora el frontend: EMJoyas\frontend\components\Footer\Footer.js: 
+Frontend: 
 
-// Archivo: EMJoyas/frontend/components/Footer/Footer.js
+EMJoyas\frontend\components\Footer\Footer.js: 
+
 import React from 'react';
 import Link from 'next/link';
 
@@ -239,9 +179,9 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default Footer;,
 
-,C:\Users\Antonio\Documents\PRamon\EMJoyas\frontend\components\Header\Header.js: 
+C:\Users\Antonio\Documents\PRamon\EMJoyas\frontend\components\Header\Header.js: 
 
 // Archivo: EMJoyas/frontend/components/Header/Header.js
 import React, { useState } from 'react';
@@ -314,9 +254,9 @@ const Header = () => {
     );
 };
 
-export default Header;
+export default Header;,
 
-,EMJoyas\frontend\components\Hero\HeroSection.js: 
+EMJoyas\frontend\components\Hero\HeroSection.js: 
 
 import React from 'react';
 import Image from 'next/image';
@@ -356,9 +296,9 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection;
+export default HeroSection;,
 
-, EMJoyas\frontend\components\Product\ProductCard.js: 
+EMJoyas\frontend\components\Product\ProductCard.js: 
 
 // Archivo: EMJoyas/frontend/components/Product/ProductCard.js
 import React, { useEffect, useState } from 'react';
@@ -467,9 +407,9 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default ProductCard;,
 
-,EMJoyas\frontend\context\CartContext.js: 
+EMJoyas\frontend\context\CartContext.js: 
 
 // Archivo: EMJoyas/frontend/context/CartContext.js (Lógica completa del Carrito)
 
@@ -603,18 +543,17 @@ export const CartProvider = ({ children }) => {
       {children}
     </CartContext.Provider>
   );
-};
+};,
 
-,EMJoyas\frontend\pages\api\hello.js: 
+EMJoyas\frontend\pages\api\hello.js: 
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
 export default function handler(req, res) {
   res.status(200).json({ name: "John Doe" });
-}
+},
 
-
-, EMJoyas\frontend\pages\_app.js: 
+EMJoyas\frontend\pages\_app.js: 
 
 // Archivo: EMJoyas/frontend/pages/_app.js
 
@@ -651,9 +590,9 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default MyApp;
+export default MyApp;,
 
-, EMJoyas\frontend\pages\_document.js: 
+EMJoyas\frontend\pages\_document.js: 
 
 import { Html, Head, Main, NextScript } from "next/document";
 
@@ -667,10 +606,9 @@ export default function Document() {
       </body>
     </Html>
   );
-}
+},
 
-
-,EMJoyas\frontend\pages\index.js: 
+EMJoyas\frontend\pages\index.js: 
 
 // Archivo: EMJoyas/frontend/pages/index.js
 
@@ -734,9 +672,9 @@ const Home = ({ noveltyProducts, error }) => {
   );
 };
 
-export default Home;
+export default Home;,
 
-,EMJoyas\frontend\styles\globals.css: 
+EMJoyas\frontend\styles\globals.css: 
 
 /* stylelint-disable at-rule-no-unknown */
 @tailwind base;
@@ -785,10 +723,9 @@ a {
   html {
     color-scheme: dark;
   }
-}
+},
 
-
-,EMJoyas\frontend\styles\Home.module.css: 
+EMJoyas\frontend\styles\Home.module.css: 
 
 .page {
   display: flex;
@@ -832,10 +769,9 @@ a {
   margin-top: 2rem;
   display: flex;
   gap: 1rem;
-}
+},
 
-
-,EMJoyas\frontend\eslint.config.mjs: 
+EMJoyas\frontend\eslint.config.mjs: 
 
 import { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -863,8 +799,7 @@ const eslintConfig = [
 
 export default eslintConfig;
 
-
-,EMJoyas\frontend\jsconfig.json: 
+EMJoyas\frontend\jsconfig.json: 
 
 {
   "compilerOptions": {
@@ -872,10 +807,9 @@ export default eslintConfig;
       "@/*": ["./*"]
     }
   }
-}
+},
 
-
-,EMJoyas\frontend\next.config.mjs: 
+EMJoyas\frontend\next.config.mjs: 
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -884,8 +818,7 @@ const nextConfig = {
 
 export default nextConfig;
 
-
-, EMJoyas\frontend\package.json: 
+EMJoyas\frontend\package.json: 
 
 {
   "name": "frontend",
@@ -912,10 +845,9 @@ export default nextConfig;
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.14"
   }
-}
+},
 
-
-, EMJoyas\frontend\postcss.config.js: 
+EMJoyas\frontend\postcss.config.js: 
 
 module.exports = {
   // CRÍTICO: La llave 'plugins' es OBLIGATORIA
@@ -924,10 +856,9 @@ module.exports = {
     '@tailwindcss/postcss': {},
     'autoprefixer': {},
   },
-};
+};,
 
-
-, EMJoyas\frontend\tailwind.config.js: 
+EMJoyas\frontend\tailwind.config.js: 
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -941,6 +872,3 @@ module.exports = {
   },
   plugins: [],
 }
-
-
-,

@@ -10,7 +10,7 @@ const Footer = () => {
           
           {/* Columna 1: Marca */}
           <div>
-            <h3 className="text-2xl font-serif font-extrabold text-pink-400 mb-4">EMJoyas</h3>
+            <h3 className="text-2xl font-serif font-extrabold text-pink-400 mb-4">Roxycamval</h3>
             <p className="text-sm text-gray-400">Joyería exclusiva, pasión y elegancia en cada pieza.</p>
             <div className="flex space-x-3 mt-4">
                 <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-pink-400">📷</a>
@@ -64,7 +64,7 @@ const Footer = () => {
       {/* Derechos de autor */}
       <div className="bg-gray-900 py-3">
         <div className="container mx-auto text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} EMJoyas. Todos los derechos reservados.
+          &copy; {new Date().getFullYear()} Roxycamval. Todos los derechos reservados.
         </div>
       </div>
     </footer>

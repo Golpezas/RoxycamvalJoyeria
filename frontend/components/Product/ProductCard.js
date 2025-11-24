@@ -1,105 +1,108 @@
-// Archivo: EMJoyas/frontend/components/Product/ProductCard.js
+// frontend/components/Product/ProductCard.js
+// VERSIÓN FINAL – SIN ERRORES DE HOOKS – LISTA PARA PRODUCCIÓN
+
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const ProductCard = ({ product }) => {
-    const defaultSrc = '/images/image-placeholder.webp';
-    const [imgSrc, setImgSrc] = useState(defaultSrc);
+  const [imgSrc, setImgSrc] = useState('/images/placeholder.webp');
 
-    // On mount, check if the product image URL exists (avoid 404s from bad URLs).
-    useEffect(() => {
-        let cancelled = false;
-        const url = product?.URL_Imagen_Principal;
-        if (!url) {
-            setImgSrc(defaultSrc);
-            return;
-        }
+  // TODOS LOS HOOKS SIEMPRE AL PRINCIPIO (regla sagrada de React)
+  useEffect(() => {
+    // Si no hay producto → usamos placeholder
+    if (!product) {
+      setImgSrc('/images/placeholder.webp');
+      return;
+    }
 
-        // Try a lightweight HEAD request; if that fails, keep placeholder.
-        (async () => {
-            try {
-                const res = await fetch(url, { method: 'HEAD' });
-                if (!cancelled) {
-                    if (res.ok) setImgSrc(url);
-                    else setImgSrc(defaultSrc);
-                }
-            } catch (err) {
-                if (!cancelled) setImgSrc(defaultSrc);
-            }
-        })();
+    // 1. Si el cliente ya puso una URL real en la hoja → la usamos
+    const urlExterna = product.URL_Imagen_Principal?.trim();
+    if (urlExterna) {
+      setImgSrc(urlExterna);
+      return;
+    }
 
-        return () => {
-            cancelled = true;
-        };
-    }, [product?.URL_Imagen_Principal]);
+    // 2. Si no hay URL externa → buscamos imagen local con el SKU
+    const sku = product.ID_SKU || 'placeholder';
+    const imagenLocal = `/images/productos/${sku}.jpg`;
 
-    if (!product || !product.ID_SKU) return null;
+    const img = new window.Image();
+    img.src = imagenLocal;
+    img.onload = () => setImgSrc(imagenLocal);
+    img.onerror = () => setImgSrc('/images/placeholder.webp');
 
-  const isOffer = product.Es_Oferta;
-  const price = product.Precio_MXN;
-  const oldPrice = product.Precio_Regular;
+  }, [product]); // ← ahora sí incluye 'product' → se elimina el warning
 
-  const formatPrice = (p) => `$${p.toFixed(2)} MXN`;
+  // VALIDACIÓN TEMPRANA DESPUÉS de los hooks
+  if (!product || !product.ID_SKU) {
+    return null;
+  }
+
+  const isOffer = ['sí', 'si', 'true', '1'].includes(
+    product.Es_Oferta?.toString().toLowerCase()
+  );
+
+  const price = Number(product.Precio_MXN) || 0;
+  const oldPrice = Number(product.Precio_Regular) || price;
+
+  const formatPrice = (p) => `$${p.toLocaleString('es-AR')} MXN`;
 
   return (
     <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
-      <Link href={`/producto/${product.ID_SKU}`} passHref>
-        
-        {/* Imagen del Producto */}
-    <div className="relative w-full h-64 min-h-[160px] bg-gray-50 flex items-center justify-center overflow-hidden"> 
-            <Image
-                src={imgSrc}
-                alt={product.Nombre_Producto}
-                fill
-                style={{ objectFit: 'contain' }}
-                className="transition-transform duration-500 group-hover:scale-105"
-                unoptimized={true}
-                onError={() => {
-                    if (imgSrc !== defaultSrc) setImgSrc(defaultSrc);
-                }}
-            />
-            {isOffer && (
-                <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
-                    OFERTA
-                </span>
-            )}
+      <Link href={`/producto/${product.ID_SKU}`} className="block">
+
+        <div className="relative w-full h-64 bg-gray-50 overflow-hidden">
+          <Image
+            src={imgSrc}
+            alt={product.Nombre_Producto}
+            fill
+            style={{ objectFit: 'contain' }}
+            className="transition-transform duration-500 group-hover:scale-105"
+            unoptimized={true}
+          />
+          {isOffer && (
+            <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
+              OFERTA
+            </span>
+          )}
         </div>
 
-        {/* Detalles */}
         <div className="p-4 text-center">
-            <h3 className="text-lg font-semibold text-gray-800 truncate mb-1">
-                {product.Nombre_Producto}
-            </h3>
+          <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-1">
+            {product.Nombre_Producto}
+          </h3>
+          {product.Piedra_Principal && (
             <p className="text-sm text-gray-500 mb-2">{product.Piedra_Principal}</p>
-            
-            <div className="flex justify-center items-center space-x-3">
-                <p className={`text-xl font-bold ${isOffer ? 'text-red-600' : 'text-gray-900'}`}>
-                    {formatPrice(price)}
-                </p>
-                {isOffer && oldPrice && (
-                    <p className="text-sm text-gray-500 line-through">
-                        {formatPrice(oldPrice)}
-                    </p>
-                )}
-            </div>
-            
+          )}
+
+          <div className="flex justify-center items-center gap-3 mt-3">
+            <span className={`text-xl font-bold ${isOffer ? 'text-red-600' : 'text-pink-600'}`}>
+              {formatPrice(price)}
+            </span>
+            {isOffer && oldPrice > price && (
+              <span className="text-sm text-gray-500 line-through">
+                {formatPrice(oldPrice)}
+              </span>
+            )}
+          </div>
         </div>
+
       </Link>
-      
-      {/* Botón de Añadir (Opcional, usaremos el de la página de detalle) */}
-      <div className="p-4 pt-0">
-         <button 
-            // Esto es solo un placeholder visual. El real está en [sku].js
-            disabled={product.Existencias <= 0}
-            className={`w-full py-2 text-sm font-semibold rounded-lg transition ${
-                product.Existencias > 0 
-                    ? 'bg-pink-100 text-pink-700 hover:bg-pink-600 hover:text-white' 
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+
+      <div className="px-4 pb-4">
+        <Link href={`/producto/${product.ID_SKU}`}>
+          <button
+            className={`w-full py-3 rounded-lg font-semibold transition-all ${
+              product.Existencias > 0
+                ? 'bg-pink-600 text-white hover:bg-pink-700'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
-        >
-            Ver Detalles
-        </button>
+            disabled={product.Existencias <= 0}
+          >
+            {product.Existencias > 0 ? 'Ver Detalles' : 'Sin Stock'}
+          </button>
+        </Link>
       </div>
     </div>
   );

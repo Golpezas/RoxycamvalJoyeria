@@ -1,33 +1,35 @@
-// Archivo: EMJoyas/frontend/pages/_app.js
-
+// frontend/pages/_app.js
 import React from 'react';
 import Head from 'next/head';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
-import { CartProvider } from '../context/CartContext'; 
+import { CartProvider } from '../context/CartContext';
+import '../styles/globals.css';
 
-import '../styles/globals.css'; // CRÍTICO: Carga los estilos de Tailwind
-
-// Estructura de la aplicación
 function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>EMJoyas - Joyería Exclusiva</title>
-        <meta name="description" content="Joyería de plata, oro y piedras preciosas. Descubre nuestra colección." />
+        <title>Roxycamval - Joyería & Carteras Exclusivas</title>
+        <meta name="description" content="Carteras y joyas hechas a mano con amor." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      
-      {/* 1. Proveedor del Contexto del Carrito */}
+
       <CartProvider>
-        {/* 2. Header global en todas las páginas */}
-        <Header />
-        <main className="flex-grow">
-          {/* 3. Component es la página actual (index, producto/[sku], etc.) */}
-          <Component {...pageProps} />
-        </main>
-        {/* 4. Footer global en todas las páginas */}
-        <Footer />
+        {/* Fondo full con la imagen del cliente */}
+        <div 
+          className="min-h-screen bg-cover bg-center bg-fixed bg-no-repeat flex flex-col"
+          style={{ backgroundImage: "url('/images/hero-background.webp')" }}
+        >
+          {/* Capa oscura para que se lea el texto (opcional pero queda pro) */}
+          <div className="bg-black/50 backdrop-blur-sm flex flex-col flex-1">
+            <Header />
+            <main className="flex-1">
+              <Component {...pageProps} />
+            </main>
+            <Footer />
+          </div>
+        </div>
       </CartProvider>
     </>
   );

@@ -1,63 +1,53 @@
-// Archivo: EMJoyas/frontend/pages/index.js
-
-import Head from "next/head";
-import axios from 'axios';
-import HeroSection from '../components/Hero/HeroSection';
+// frontend/pages/index.js
+import { useState, useEffect } from 'react';
 import ProductCard from '../components/Product/ProductCard';
 
-// 1. Obtener datos del Backend antes de renderizar (Server-Side Rendering)
-export async function getServerSideProps() {
-  let noveltyProducts = [];
-  let error = null;
+export default function Home() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  try {
-    // Llama al endpoint de novedades del Backend
-    const response = await axios.get('http://localhost:5000/api/v1/productos?novelty=true');
-    noveltyProducts = response.data.products || [];
-  } catch (err) {
-    console.error("Error al obtener productos de novedad:", err.message);
-    error = "No se pudo conectar al catálogo de joyería. Verifica el Backend (puerto 5000).";
-  }
-
-  return {
-    props: {
-      noveltyProducts,
-      error,
-    },
-  };
-}
-
-const Home = ({ noveltyProducts, error }) => {
-
-  if (error) {
-    return <div className="container mx-auto p-4 text-center text-red-600 font-bold">{error}</div>;
-  }
+  useEffect(() => {
+    fetch('http://localhost:5000/api/v1/productos')
+      .then(res => res.json())
+      .then(data => {
+        const validProducts = (data.products || []).filter(p => p && p.ID_SKU);
+        setProducts(validProducts);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   return (
-    <div className="min-h-screen"> 
-      <Head>
-        <title>Roxy camval - Joyería Exclusiva</title>
-      </Head>
-      
-      <HeroSection />
+    <main className="min-h-screen">
+      {/* Hero */}
+      <section className="bg-gradient-to-b from-pink-100 to-white py-20 text-center">
+        <h1 className="text-5xl font-bold text-pink-800 mb-4">Roxycamval</h1>
+        <p className="text-2xl text-gray-700 mb-8">Joyería Brillante • Elegancia que Perdura</p>
+        <button className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-4 px-10 rounded-full text-lg transition transform hover:scale-105">
+          Explorar Colección
+        </button>
+      </section>
 
-      <div className="container mx-auto p-4 py-12">
-        <h2 className="text-4xl font-serif font-bold mb-8 text-gray-800 border-b pb-2">
+      {/* Productos */}
+      <section className="container mx-auto px-4 py-16">
+        <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">
           ✨ Novedades y Colecciones
         </h2>
 
-        {noveltyProducts.length === 0 ? (
-          <p className="text-gray-600 text-center py-10">No hay productos marcados como novedad. Verifica el JSON del backend.</p>
+        {loading ? (
+          <p className="text-center text-gray-600 py-20">Cargando productos...</p>
+        ) : products.length === 0 ? (
+          <p className="text-center text-gray-600 py-20">
+            No hay productos disponibles en este momento.
+          </p>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {noveltyProducts.map(product => (
+            {products.map(product => (
               <ProductCard key={product.ID_SKU} product={product} />
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </section>
+    </main>
   );
-};
-
-export default Home;
+}
