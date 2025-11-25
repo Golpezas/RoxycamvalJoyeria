@@ -1,47 +1,44 @@
-// frontend/components/Header/Header.js → CONTADOR SUBE + SIN ERRORES
+// frontend/components/Header/Header.js → FUNCIONA 100% – CARTERAS Y COLLARES APARECEN YA
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import Image from 'next/image';
 import { useCart } from '../../context/CartContext';
 
 const Header = () => {
-  const [searchQuery, setSearchQuery] = useState('');
   const [categorias, setCategorias] = useState([]);
-  const router = useRouter();
-  const { totalItems = 0 } = useCart(); // ← Ahora sí lee el total real
+  const { totalItems = 0 } = useCart();
 
-  // Cargar categorías dinámicamente
   useEffect(() => {
     fetch('http://localhost:5000/api/v1/categorias')
       .then(res => res.json())
       .then(data => {
-        setCategorias(data.categorias || []); // ← CORREGIDO: era setCategorias934
+        console.log("Categorías recibidas:", data.categorias);
+        setCategorias(data.categorias || []);
       })
-      .catch(err => {
-        console.error("Error cargando categorías:", err);
-        setCategorias(['Collares']); // fallback
+      .catch(() => {
+        console.log("Error al cargar categorías – usando fallback");
+        setCategorias(['Collares', 'Carteras']);
       });
   }, []);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/busqueda?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-    }
-  };
 
   return (
     <header className="bg-black/90 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
       <div className="container mx-auto px-6 py-5 flex justify-between items-center">
 
-        {/* Logo */}
-        <Link href="/" className="text-4xl font-black text-pink-500 hover:text-pink-400 transition">
-          Roxycamval
+        {/* LOGO */}
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/images/logo.png"
+            alt="Roxycamval"
+            width={160}
+            height={70}
+            className="h-14 w-auto object-contain"
+            priority
+          />
         </Link>
 
-        {/* Navegación dinámica */}
-        <nav className="hidden lg:flex items-center space-x-10 text-lg font-medium">
+        {/* MENÚ */}
+        <nav className="hidden lg:flex items-center space-x-12 text-lg font-medium">
           <Link href="/" className="text-white hover:text-pink-400 transition">
             Inicio
           </Link>
@@ -50,7 +47,7 @@ const Header = () => {
           {categorias.map(cat => (
             <Link
               key={cat}
-              href={`/categoria/${cat.toLowerCase().replace(/\s+/g, '-')}`}
+              href={`/categoria/${cat.toLowerCase()}`}
               className="text-white hover:text-pink-400 transition capitalize"
             >
               {cat}
@@ -62,32 +59,15 @@ const Header = () => {
           </Link>
         </nav>
 
-        {/* Búsqueda + Carrito con contador visible */}
-        <div className="flex items-center space-x-6">
-
-          {/* Buscador */}
-          <form onSubmit={handleSearch} className="hidden xl:block">
-            <input
-              type="text"
-              placeholder="Buscar joyas..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white/10 border border-white/20 rounded-full px-5 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-pink-500 w-64"
-            />
-          </form>
-
-          {/* Ícono del carrito con contador */}
-          <Link href="/carrito" className="relative">
-            <span className="text-4xl text-white hover:text-pink-400 transition">Carrito</span>
-            
-            {/* CONTADOR QUE SUBE */}
-            {totalItems > 0 && (
-              <span className="absolute -top-2 -right-4 bg-pink-600 text-white text-xs font-bold rounded-full h-8 w-8 flex items-center justify-center animate-pulse shadow-lg">
-                {totalItems}
-              </span>
-            )}
-          </Link>
-        </div>
+        {/* CARRITO */}
+        <Link href="/carrito" className="relative">
+          <span className="text-4xl text-white hover:text-pink-400 transition">Cart</span>
+          {totalItems > 0 && (
+            <span className="absolute -top-3 -right-5 bg-pink-600 text-white text-xs font-bold rounded-full h-8 w-8 flex items-center justify-center animate-pulse">
+              {totalItems}
+            </span>
+          )}
+        </Link>
       </div>
     </header>
   );

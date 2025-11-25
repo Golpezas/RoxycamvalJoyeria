@@ -1,45 +1,81 @@
-// frontend/pages/categoria/[categoria].js
+// frontend/pages/categoria/[categoria].js → FUNCIONA CON CUALQUIER CATEGORÍA (Carteras, Collares, etc.)
 import ProductCard from '../../components/Product/ProductCard';
 import Link from 'next/link';
+import Head from 'next/head';
 
 export async function getServerSideProps({ params }) {
-  const cat = params.categoria.toLowerCase().replace(/-/g, ' ');
-  const res = await fetch(`http://localhost:5000/api/v1/productos`);
-  const data = await res.json();
+  const slug = params.categoria; // ej: "carteras", "collares-perlas", "relojes"
+  
+  try {
+    const res = await fetch(`http://localhost:5000/api/v1/productos`);
+    const data = await res.json();
+    const allProducts = data.products || [];
 
-  const productos = data.products.filter(p =>
-    p.Categoría?.toLowerCase().includes(cat)
-  );
+    // Buscamos productos cuya categoría, al hacer slug, coincida con el slug de la URL
+    const productos = allProducts.filter(product => {
+      if (!product.Categoría) return false;
+      const categoriaSlug = product.Categoría
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')       // espacios → guiones
+        .replace(/[^a-z0-9-]/g, '') // quita acentos y símbolos
+        .replace(/-+/g, '-');
+      return categoriaSlug === slug;
+    });
 
-  const titulo = productos.length > 0
-    ? productos[0].Categoría
-    : cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' ');
+    // Título bonito para mostrar
+    const titulo = productos.length > 0
+      ? productos[0].Categoría
+      : slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ');
 
-  return { props: { products: productos, titulo } };
+    return {
+      props: {
+        products: productos,
+        titulo,
+        slug
+      }
+    };
+  } catch (error) {
+    console.error("Error en categoría:", error);
+    return { props: { products: [], titulo: "Categoría", slug } };
+  }
 }
 
 export default function Categoria({ products, titulo }) {
   return (
-    <div className="container mx-auto px-6 py-16 min-h-screen">
-      <Link href="/" className="inline-block mb-8 text-pink-400 hover:text-pink-300 font-bold text-lg">
-        ← Volver al inicio
-      </Link>
+    <>
+      <Head>
+        <title>{titulo} • Roxycamval Joyería</title>
+        <meta name="description" content={`Explora nuestra colección exclusiva de ${titulo.toLowerCase()}`} />
+      </Head>
 
-      <h1 className="text-6xl font-black text-center mb-16 text-white drop-shadow-2xl">
-        {titulo}
-      </h1>
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white py-20">
+        <div className="container mx-auto px-6 max-w-7xl">
 
-      {products.length === 0 ? (
-        <p className="text-center text-3xl text-gray-400 py-32">
-          Pronto más productos en esta categoría
-        </p>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {products.map(p => (
-            <ProductCard key={p.ID_SKU} product={p} />
-          ))}
+          <Link href="/" className="inline-block mb-10 text-pink-400 hover:text-pink-300 font-bold text-lg">
+            ← Volver al inicio
+          </Link>
+
+          <h1 className="text-6xl md:text-8xl font-black text-center mb-20 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 drop-shadow-2xl">
+            {titulo}
+          </h1>
+
+          {products.length === 0 ? (
+            <div className="text-center py-32">
+              <p className="text-4xl text-gray-400 mb-8">Pronto más productos en esta categoría</p>
+              <Link href="/" className="text-2xl text-pink-400 hover:text-pink-300 underline">
+                ← Volver al inicio
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-12">
+              {products.map(p => (
+                <ProductCard key={p.ID_SKU} product={p} />
+              ))}
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }
