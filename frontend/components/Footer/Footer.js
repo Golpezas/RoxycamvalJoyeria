@@ -1,8 +1,22 @@
-// frontend/components/Footer/Footer.js → CON EMAIL + NEWSLETTER FUNCIONAL
-import React from 'react';
+// frontend/components/Footer/Footer.js → CARTERAS DINÁMICAS + CONSISTENTE CON HEADER
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const Footer = () => {
+  const [categorias, setCategorias] = useState([]);
+
+  // CARGAMOS LAS CATEGORÍAS IGUAL QUE EN EL HEADER
+  useEffect(() => {
+    fetch('http://localhost:5000/api/v1/categorias')
+      .then(res => res.json())
+      .then(data => {
+        setCategorias(data.categorias || []);
+      })
+      .catch(() => {
+        setCategorias(['Collares', 'Carteras']);
+      });
+  }, []);
+
   const handleNewsletter = (e) => {
     e.preventDefault();
     const email = e.target.email.value.trim();
@@ -12,7 +26,6 @@ const Footer = () => {
       return;
     }
 
-    // ENVÍA EL EMAIL A roxycamval@gmail.com
     fetch('http://localhost:5000/api/v1/newsletter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -30,7 +43,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
 
-          {/* Columna 1: Marca + Instagram + WhatsApp + Email */}
+          {/* Columna 1: Marca */}
           <div className="space-y-6">
             <div>
               <h3 className="text-3xl font-black text-pink-500 mb-4">Roxycamval</h3>
@@ -40,44 +53,50 @@ const Footer = () => {
               </p>
             </div>
 
-            <div className="flex items-center">
-              <a 
-                href="https://www.instagram.com/roxycamval/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-3xl hover:text-pink-400 transition transform hover:scale-110"
-              >
-                Instagram
-              </a>
-            </div>
+            <a 
+              href="https://www.instagram.com/roxycamval/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-3xl hover:text-pink-400 transition transform hover:scale-110 inline-block"
+            >
+              Instagram
+            </a>
 
             <a 
               href="https://wa.me/5491131991996?text=¡Hola%20Roxycamval!%20Vi%20tu%20tienda%20y%20quiero%20consultar" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-block w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black text-lg py-4 rounded-full text-center shadow-xl transform hover:scale-105 transition"
+              className="inline-block w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black text-lg py-4 rounded-full text-center shadow-xl transform hover:scale-105 transition mt-4"
             >
               CHATEAR POR WHATSAPP
             </a>
 
-            {/* EMAIL OFICIAL */}
             <div className="text-sm text-gray-400">
               <p>Email:</p>
-              <a 
-                href="mailto:roxycamval@gmail.com" 
-                className="text-pink-400 font-medium hover:underline"
-              >
+              <a href="mailto:roxycamval@gmail.com" className="text-pink-400 font-medium hover:underline">
                 roxycamval@gmail.com
               </a>
             </div>
           </div>
 
-          {/* Columna 2: Tienda */}
+          {/* Columna 2: Tienda → AHORA DINÁMICA */}
           <div>
             <h4 className="text-xl font-bold mb-5 text-pink-400">Tienda</h4>
             <ul className="space-y-3 text-gray-300">
               <li><Link href="/" className="hover:text-white transition">Inicio</Link></li>
-              <li><Link href="/categoria/collares" className="hover:text-white transition capitalize">Collares</Link></li>
+              
+              {/* CATEGORÍAS DINÁMICAS */}
+              {categorias.map(cat => (
+                <li key={cat}>
+                  <Link 
+                    href={`/categoria/${cat.toLowerCase()}`} 
+                    className="hover:text-white transition capitalize"
+                  >
+                    {cat}
+                  </Link>
+                </li>
+              ))}
+              
               <li><Link href="/ofertas" className="text-red-500 hover:text-red-300 font-bold transition">Ofertas</Link></li>
             </ul>
           </div>
