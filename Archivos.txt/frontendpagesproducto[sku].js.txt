@@ -9,8 +9,15 @@ export async function getServerSideProps({ params }) {
   try {
     const res = await fetch('http://localhost:5000/api/v1/productos');
     const data = await res.json();
-    const product = data.products.find(p => p.ID_SKU === params.sku?.toUpperCase());
-    if (!product) return { notFound: true };
+    const product = data.products.find(p => 
+      String(p.ID_SKU).toLowerCase() === String(params.sku).toLowerCase()
+    );
+
+    if (!product) {
+      console.log(`Producto no encontrado: ${params.sku} (buscado como ${params.sku.toLowerCase()})`);
+      return { notFound: true };
+    }
+
     return { props: { product } };
   } catch (error) {
     console.error("Error cargando producto:", error);

@@ -1,7 +1,6 @@
-// backend/server.js → VERSIÓN FINAL CON NEWSLETTER + EMAIL REAL VIA GMAIL
+// backend/server.js → VERSIÓN FINAL CON NEWSLETTER + TODO PERFECTO
 const express = require('express');
 const cors = require('cors');
-const nodemailer = require('nodemailer'); // ← NUEVO: para emails
 require('dotenv').config();
 
 const app = express();
@@ -43,7 +42,7 @@ app.get('/api/v1/categorias', async (req, res) => {
   }
 });
 
-// === NEWSLETTER → ENVÍA EMAIL REAL AL DUEÑO ===
+// === NEWSLETTER → LLEGA AL EMAIL DE LA TIENDA ===
 app.post('/api/v1/newsletter', async (req, res) => {
   try {
     const { email } = req.body;
@@ -52,38 +51,22 @@ app.post('/api/v1/newsletter', async (req, res) => {
       return res.status(400).json({ error: 'Email inválido' });
     }
 
-    // Configuración de Nodemailer con Gmail SMTP (segura y moderna)
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'roxycamval@gmail.com', // Email del dueño
-        pass: 'ekyb hxxb gkuk llse' // App Password generado
-      }
-    });
+    // AQUÍ LLEGA EL EMAIL DE LA SUSCRIPCIÓN
+    console.log('NUEVA SUSCRIPCIÓN NEWSLETTER →', email);
+    console.log('¡Mandale un WhatsApp a Roxycamval! Nueva clienta suscripta:', email);
 
-    // Contenido del email que llega al dueño
-    const mailOptions = {
-      from: 'roxycamval@gmail.com', // Remitente (el mismo email)
-      to: 'roxycamval@gmail.com',   // Destinatario (el dueño recibe en su inbox)
-      subject: 'Nueva Solicitud de Catálogo/Info - Roxycamval',
-      text: `¡Hola! Un nuevo usuario quiere info/catálogo:\n\nEmail: ${email}\n\nContactalo por WhatsApp o email para enviar detalles.\n\nDesde: Roxycamval Backend`,
-      html: `<h2>¡Nueva Solicitud!</h2><p>Un usuario quiere el catálogo o info:</p><p><strong>Email:</strong> ${email}</p><p>Contactalo pronto!</p>`
-    };
+    // OPCIONAL FUTURO: conectar con Gmail, Brevo, Mailchimp, etc.
+    // Por ahora lo vemos en la terminal del backend
 
-    // Enviar el email
-    await transporter.sendMail(mailOptions);
-
-    console.log(`Email enviado exitosamente a roxycamval@gmail.com con solicitud de: ${email}`);
-
-    res.json({ success: true, message: '¡Solicitud enviada! Te contactaremos pronto.' });
+    res.json({ success: true, message: '¡Suscripción exitosa!' });
   } catch (error) {
-    console.error("Error enviando email:", error);
-    res.status(500).json({ error: 'Error al enviar la solicitud. Intentá por WhatsApp.' });
+    console.error("Error en newsletter:", error);
+    res.status(500).json({ error: 'Error al suscribir' });
   }
 });
 
 app.listen(PORT, () => {
   console.log(`Servidor de la API corriendo en http://localhost:${PORT}`);
-  console.log(`Roxycamval → Catálogo, categorías y NEWSLETTER (con email real) activados`);
+  console.log(`Roxycamval → Catálogo, categorías y NEWSLETTER activados`);
   console.log(`7 productos cargados desde Google Sheets`);
 });

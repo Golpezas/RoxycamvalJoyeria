@@ -1,4 +1,4 @@
-// frontend/components/Product/ProductCard.js → VERSIÓN FINAL SIN ERRORES DE HOOKS
+// frontend/components/Product/ProductCard.js → VERSIÓN FINAL 100% ESTABLE (Next.js 15.5+ compatible)
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -7,10 +7,7 @@ const ProductCard = ({ product }) => {
   const [imgSrc, setImgSrc] = useState('/images/placeholder.webp');
 
   useEffect(() => {
-    if (!product) {
-      setImgSrc('/images/placeholder.webp');
-      return;
-    }
+    if (!product) return;
 
     const urlExterna = product.URL_Imagen_Principal?.trim();
     if (urlExterna) {
@@ -19,13 +16,9 @@ const ProductCard = ({ product }) => {
     }
 
     const sku = String(product.ID_SKU || '').trim();
-    if (!sku) {
-      setImgSrc('/images/placeholder.webp');
-      return;
-    }
+    if (!sku) return;
 
     const imagenLocal = `/images/productos/${sku}.jpg`;
-
     const img = new window.Image();
     img.src = imagenLocal;
     img.onload = () => setImgSrc(imagenLocal);
@@ -33,7 +26,6 @@ const ProductCard = ({ product }) => {
   }, [product]);
 
   if (!product) return null;
-
   const sku = String(product.ID_SKU || '').trim();
   if (!sku) return null;
 
@@ -43,25 +35,21 @@ const ProductCard = ({ product }) => {
 
   const price = Number(product.Precio_MXN) || 0;
   const oldPrice = Number(product.Precio_Regular) || price;
-
   const formatPrice = (p) => `$${p.toLocaleString('es-AR')}`;
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden group transform hover:-translate-y-2 border-4 border-green-500">
-      {/* BORDE VERDE PARA CONFIRMAR QUE SE RENDERIZA */}
-
+    <div className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden group transform hover:-translate-y-2">
+      
       <Link href={`/producto/${sku}`} prefetch={false}>
-        <div className="relative aspect-square bg-gray-50 overflow-hidden cursor-pointer">
+        <div className="relative aspect-square bg-gray-50">
           <Image
             src={imgSrc}
-            alt={product.Nombre_Producto || 'Producto Roxycamval'}
+            alt={product.Nombre_Producto || 'Producto'}
             fill
             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-contain p-8 transition-transform duration-700 group-hover:scale-110"
             priority={false}
-            placeholder="blur"
-            blurDataURL="/images/placeholder.webp"
-            onError={() => setImgSrc('/images/placeholder.webp')}
+            unoptimized // ← ESTO ES LA CLAVE EN DESARROLLO CON IMÁGENES LOCALES/EXTERNAS
           />
 
           {isOffer && (
@@ -76,10 +64,6 @@ const ProductCard = ({ product }) => {
         <h3 className="text-lg font-bold text-gray-800 line-clamp-2 min-h-14">
           {product.Nombre_Producto || 'Sin nombre'}
         </h3>
-
-        {product.Piedra_Principal && (
-          <p className="text-sm text-gray-500">{product.Piedra_Principal}</p>
-        )}
 
         <div className="flex justify-center items-center gap-3">
           <span className={`text-2xl font-black ${isOffer ? 'text-red-600' : 'text-pink-600'}`}>

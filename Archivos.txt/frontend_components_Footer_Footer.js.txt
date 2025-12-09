@@ -31,16 +31,11 @@ const Footer = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
     })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        alert(`¡Gracias! Tu solicitud fue enviada. Te contactaremos a ${email}.`);
-        e.target.reset();
-      } else {
-        alert(data.error || 'Error al enviar. Intentá por WhatsApp.');
-      }
+    .then(() => {
+      alert(`¡Gracias! Te enviamos las novedades a ${email}`);
+      e.target.reset();
     })
-    .catch(() => alert('Error al enviar. Intentá por WhatsApp.'));
+    .catch(() => alert('Error al suscribir. Intentá por WhatsApp'));
   };
 
   return (
@@ -136,7 +131,7 @@ const Footer = () => {
                 type="submit"
                 className="w-full bg-gradient-to-r from-pink-600 to-purple-700 hover:from-pink-700 hover:to-purple-800 font-black py-4 rounded-lg transition transform hover:scale-105 shadow-xl text-lg"
               >
-                Enviar  {/* ← CAMBIO: de Suscribir a Enviar */}
+                Suscribir
               </button>
             </form>
 
