@@ -9,7 +9,7 @@ const HeroSection = () => {
         <div className="absolute inset-0 w-full h-full z-0">
             <Image
                 src="/images/hero-background.webp"
-                alt="Joyería"
+                alt="Joyería Brillante"
                 fill
                 style={{ objectFit: 'cover', opacity: 0.5 }}
                 priority
@@ -20,7 +20,7 @@ const HeroSection = () => {
 
       <div className="relative z-10 text-center p-8 bg-white/70 rounded-xl shadow-2xl">
         <h1 className="text-6xl md:text-7xl font-serif font-extrabold text-gray-800 mb-4 leading-tight">
-          Elegancia que Inspira
+          Elegancia que Perdura
         </h1>
         <p className="text-xl text-gray-600 mb-6 max-w-lg mx-auto">
           Descubre nuestra exclusiva colección de joyas, diseñadas para brillar en cada momento.
